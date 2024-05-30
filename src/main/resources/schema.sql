@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS techcheck.users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(255) NOT NULL,
+    balance DECIMAL
+    );
