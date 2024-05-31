@@ -3,6 +3,7 @@ package org.keniu.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.keniu.exceptions.InsufficientBalanceException;
 import org.keniu.services.UserService;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,24 +33,48 @@ class TransferControllerTest {
     private UserService userService;
 
     @Test
-    void testTransferMoneySuccess() throws Exception {
-        Mockito.doNothing().when(userService).transferMoney(anyString(), anyString(), any(BigDecimal.class));
+    void testDeclarativeTransferMoneySuccess() throws Exception {
+        Mockito.doNothing().when(userService).declarativeTransferMoney(anyString(), anyString(), any(BigDecimal.class));
 
         Map<String, String> payload = createPayload();
 
-        mockMvc.perform(sendPostRequest(payload))
+        mockMvc.perform(sendPostRequest(payload, "/declarative-transfer"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Transfer successful!"));
     }
 
     @Test
-    void testTransferMoneyInsufficientBalance() throws Exception {
-        Mockito.doThrow(new RuntimeException("Not enough balance to transfer"))
-                .when(userService).transferMoney(anyString(), anyString(), any(BigDecimal.class));
+    void testDeclarativeTransferMoneyInsufficientBalance() throws Exception {
+        Mockito.doThrow(new InsufficientBalanceException("Not enough balance to transfer"))
+                .when(userService).declarativeTransferMoney(anyString(), anyString(), any(BigDecimal.class));
 
         Map<String, String> payload = createPayload();
 
-        mockMvc.perform(sendPostRequest(payload))
+        mockMvc.perform(sendPostRequest(payload, "/declarative-transfer"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Not enough balance to transfer"));
+    }
+
+    @Test
+    void testProgrammaticTransferMoneySuccess() throws Exception {
+        Mockito.doNothing().when(userService)
+                .programmaticTransferMoney(anyString(), anyString(), any(BigDecimal.class));
+
+        Map<String, String> payload = createPayload();
+
+        mockMvc.perform(sendPostRequest(payload, "/programmatic-transfer"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Transfer successful!"));
+    }
+
+    @Test
+    void testProgrammaticTransferMoneyInsufficientBalance() throws Exception {
+        Mockito.doThrow(new InsufficientBalanceException("Not enough balance to transfer"))
+                .when(userService).programmaticTransferMoney(anyString(), anyString(), any(BigDecimal.class));
+
+        Map<String, String> payload = createPayload();
+
+        mockMvc.perform(sendPostRequest(payload, "/programmatic-transfer"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Not enough balance to transfer"));
     }
@@ -62,11 +87,11 @@ class TransferControllerTest {
         return payload;
     }
 
-    private MockHttpServletRequestBuilder sendPostRequest(Map<String, String> payload)
+    private MockHttpServletRequestBuilder sendPostRequest(Map<String, String> payload, String url)
             throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonPayload = objectMapper.writeValueAsString(payload);
-        return post("/transfer")
+        return post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonPayload);
     }
