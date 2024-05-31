@@ -20,30 +20,24 @@ public class TransferController {
     }
 
     @PostMapping("/declarative-transfer")
-    public String declarativeTransferMoney(@RequestBody Map<String, String> payload) {
+    public String declarativeTransferMoney(@RequestBody Map<String, String> payload)
+            throws InsufficientBalanceException {
         String fromUser = payload.get("fromUser");
         String toUser = payload.get("toUser");
         BigDecimal amount = new BigDecimal(payload.get("amount"));
 
-        try {
-            userService.declarativeTransferMoney(fromUser, toUser, amount);
-            return "Transfer successful!";
-        } catch (InsufficientBalanceException e) {
-            return e.getMessage();
-        }
+        userService.declarativeTransferMoney(fromUser, toUser, amount);
+        return "Transfer successful!";
     }
 
     @PostMapping("/programmatic-transfer")
-    public String programmaticTransferMoney(@RequestBody Map<String, String> payload) {
+    public String programmaticTransferMoney(@RequestBody Map<String, String> payload)
+            throws InsufficientBalanceException {
         String fromUser = payload.get("fromUser");
         String toUser = payload.get("toUser");
         BigDecimal amount = new BigDecimal(payload.get("amount"));
 
-        try {
-            userService.programmaticTransferMoney(fromUser, toUser, amount);
-            return "Transfer successful!";
-        } catch (InsufficientBalanceException e) {
-            return e.getMessage();
-        }
+        userService.programmaticTransferMoney(fromUser, toUser, amount);
+        return "Transfer successful!";
     }
 }
