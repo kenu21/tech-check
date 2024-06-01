@@ -34,8 +34,6 @@ class TransferControllerTest {
 
     @Test
     void testDeclarativeTransferMoneySuccess() throws Exception {
-        Mockito.doNothing().when(userService).declarativeTransferMoney(anyString(), anyString(), any(BigDecimal.class));
-
         Map<String, String> payload = createPayload();
 
         mockMvc.perform(sendPostRequest(payload, "/declarative-transfer"))
@@ -57,9 +55,6 @@ class TransferControllerTest {
 
     @Test
     void testProgrammaticTransferMoneySuccess() throws Exception {
-        Mockito.doNothing().when(userService)
-                .programmaticTransferMoney(anyString(), anyString(), any(BigDecimal.class));
-
         Map<String, String> payload = createPayload();
 
         mockMvc.perform(sendPostRequest(payload, "/programmatic-transfer"))

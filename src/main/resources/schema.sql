@@ -3,3 +3,7 @@ CREATE TABLE IF NOT EXISTS techcheck.users (
     login VARCHAR(255) NOT NULL,
     balance DECIMAL
     );
+CREATE TABLE IF NOT EXISTS techcheck.roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+    );
