@@ -6,6 +6,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
+@IdClass(ComposeId.class)
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
